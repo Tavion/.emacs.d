@@ -1,5 +1,7 @@
 (require 'color-theme)
-(require 'color-theme-molokai)
+;;(require 'color-theme-molokai)
+;;(require 'color-theme-solarized)
+(require 'darcula-theme)
 
 ;; {{ work around color theme bug
 ;; @see https://plus.google.com/106672400078851000780/posts/KhTgscKE8PM
@@ -9,9 +11,11 @@
     (disable-theme i)))
 ;; }}
 
-(color-theme-molokai)
+;;(color-theme-darcula)
+;;(color-theme-solarized)
+;;(color-theme-molokai)
 ;; This line must be after color-theme-molokai! Don't know why.
-(setq color-theme-illegal-faces "^\\(w3-\\|dropdown-\\|info-\\|linum\\|yas-\\|font-lock\\)")
+;;(setq color-theme-illegal-faces "^\\(w3-\\|dropdown-\\|info-\\|linum\\|yas-\\|font-lock\\)")
 ;; (color-theme-select 'color-theme-xp)
 ;; (color-theme-xp)
 

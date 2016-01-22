@@ -10,8 +10,8 @@
 (setq *is-a-mac* (eq system-type 'darwin))
 (setq *is-carbon-emacs* (and *is-a-mac* (eq window-system 'mac)))
 (setq *is-cocoa-emacs* (and *is-a-mac* (eq window-system 'ns)))
-(setq *win32* (eq system-type 'windows-nt) )
-(setq *cygwin* (eq system-type 'cygwin) )
+;;(setq *win32* (eq system-type 'windows-nt) )
+;;(setq *cygwin* (eq system-type 'cygwin) )
 (setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
 (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
 (setq *linux-x* (and window-system *linux*) )
@@ -95,7 +95,7 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 (require 'init-moz)
 (require 'init-gtags)
 ;; use evil mode (vi key binding)
-(require 'init-evil)
+;;(require 'init-evil)
 (require 'init-sh)
 (require 'init-ctags)
 (require 'init-bbdb)
@@ -111,6 +111,21 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)
 (require 'init-httpd)
+
+(require 'php-mode)
+
+;; start emacs-org-mode with indent-mode
+(setq org-startup-indented t)
+
+;; 80 line-end-position
+(require 'fill-column-indicator)
+(define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
+(global-fci-mode 1)
+
+;; about speedbar
+;; (speedbar 1)
+;显示所有文件
+(setq speedbar-show-unknown-files t)
 
 ;; projectile costs 7% startup time
 
@@ -151,19 +166,44 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 ;; It's dependent on init-site-lisp.el
 (if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
 
+;; have packages installed by Homebrew
+(let ((default-directory "/usr/local/share/emacs/site-lisp/"))
+  (normal-top-level-add-subdirs-to-load-path))
+
+;; active AucTex
+(load "/usr/local/share/emacs/site-lisp/auctex.el" nil t t)
+(load "/usr/local/share/emacs/site-lisp/preview-latex.el" nil t t)
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(setq TeX-output-view-style (quote (("^pdf$" "." "Preview %o %(outpage)"))))
+(add-hook 'LaTeX-mode-hook
+          (lambda ()
+            (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
+            (setq TeX-command-default "XeLaTeX")))
+
+(require 'ess-site)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
+ '(current-language-environment "UTF-8")
+ '(display-time-mode t)
+ '(git-gutter:handled-backends (quote (svn hg git)))
+ '(menu-bar-mode nil)
  '(safe-local-variable-values (quote ((lentic-init . lentic-orgel-org-init))))
- '(session-use-package t nil (session)))
+ '(session-use-package t nil (session))
+ '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold))) t))
+(menu-bar-mode -1)
 ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:
