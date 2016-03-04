@@ -1,5 +1,8 @@
 ;; -*- coding: utf-8 -*-
 
+(setq user-full-name "Sheck Gu")
+(setq user-login-name "Sheck")
+(setq user-mail-address "gukan@xs.ustb.edu.cn")
 (setq emacs-load-start-time (current-time))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
 
@@ -27,7 +30,7 @@
 ;; Less GC, more memory
 ;;----------------------------------------------------------------------------
 (defun my-optimize-gc (NUM PER)
-"By default Emacs will initiate GC every 0.76 MB allocated (gc-cons-threshold == 800000).
+  "By default Emacs will initiate GC every 0.76 MB allocated (gc-cons-threshold == 800000).
 @see http://www.gnu.org/software/emacs/manual/html_node/elisp/Garbage-Collection.html
 We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
   (setq-default gc-cons-threshold (* 1024 1024 NUM)
@@ -94,7 +97,7 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 ;; (require 'init-gist)
 (require 'init-moz)
 (require 'init-gtags)
-;; use evil mode (vi key binding)
+;;use evil mode (vi key binding)
 ;;(require 'init-evil)
 (require 'init-sh)
 (require 'init-ctags)
@@ -114,17 +117,47 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 
 (require 'php-mode)
 
+(require 'multiple-cursors)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+
 ;; start emacs-org-mode with indent-mode
 (setq org-startup-indented t)
 
 ;; 80 line-end-position
 (require 'fill-column-indicator)
-(define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
-(global-fci-mode 1)
+(setq-default fill-column 80)
+(setq-default fci-column 80)
+(setq-default fci-rule-column 80)
+(define-globalized-minor-mode
+  global-fci-mode fci-mode (lambda () (fci-mode 1)))
+(add-hook 'c-mode-hook 'fci-mode)
+(add-hook 'c++-mode-hook 'fci-mode)
+(add-hook 'php-mode-hook 'fci-mode)
+(add-hook 'ess-mode-hook 'fci-mode)
+(add-hook 'java-mode-hook 'fci-mode)
+(add-hook 'python-mode-hook 'fci-mode)
+
+;; electric-operator-mode
+(add-hook 'c-mode-hook 'electric-operator-mode)
+(add-hook 'c++-mode-hook 'electric-operator-mode)
+(add-hook 'php-mode-hook 'electric-operator-mode)
+(add-hook 'ess-mode-hook 'electric-operator-mode)
+(add-hook 'java-mode-hook 'electric-operator-mode)
+(add-hook 'python-mode-hook 'electric-operator-mode)
+
+(add-hook 'c-mode-hook 'hl-todo-mode)
+(add-hook 'c++-mode-hook 'hl-todo-mode)
+(add-hook 'php-mode-hook 'hl-todo-mode)
+(add-hook 'ess-mode-hook 'hl-todo-mode)
+(add-hook 'java-mode-hook 'hl-todo-mode)
+(add-hook 'python-mode-hook 'hl-todo-mode)
 
 ;; about speedbar
 ;; (speedbar 1)
-;显示所有文件
+                                        ;显示所有文件
 (setq speedbar-show-unknown-files t)
 
 ;; projectile costs 7% startup time
@@ -154,8 +187,8 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 ;; }}
 
 (when (require 'time-date nil t)
-   (message "Emacs startup time: %d seconds."
-    (time-to-seconds (time-since emacs-load-start-time))))
+  (message "Emacs startup time: %d seconds."
+           (time-to-seconds (time-since emacs-load-start-time))))
 
 ;;----------------------------------------------------------------------------
 ;; Locales (setting them earlier in this file doesn't work in X)
@@ -183,25 +216,86 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
             (setq TeX-command-default "XeLaTeX")))
 
 (require 'ess-site)
+(setq ess-use-auto-complete t)
+(setq ess-default-style 'DEFAULT)
+(require 'r-autoyas)
+(add-hook 'ess-mode-hook 'r-autoyas-ess-activate)
+
+;; ace-jump-mode
+(add-to-list 'load-path "~/.emacs.d/elpa/ace-jump-mode-2.0/")
+(autoload
+  'ace-jump-mode
+  "ace-jump-mode"
+  "Emacs quick move minor mode"
+  t)
+(define-key global-map (kbd "C-c j") 'ace-jump-mode)
+;; enable a more powerful jump back function from ace jump mode
+(autoload
+  'ace-jump-mode-pop-mark
+  "ace-jump-mode"
+  "Ace jump back:-)"
+  t)
+(eval-after-load "ace-jump-mode"
+  '(ace-jump-mode-enable-mark-sync))
+(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+
+(setq-default indent-tabs-mode nil);
+
+;; remember-mode
+;;(setq org-default-notes-file (concat org-directory "~/.emacs.d/notes"))
+(define-key global-map (kbd "C-c c") 'org-capture)
+(setq org-capture-templates
+      '(("t" "task in inbox" entry (file+headline "~/GTD/inbox.org" "Tasks")
+         "* %?\n输入于: %U\n")
+        ("i" "idea in inbox" entry (file+datetree "~/GTD/inbox.org")
+         "* %?\n输入于: %U\n")
+        ("b" "I want to read it" entry (file+headline "~/GTD/task.org" "Reading and Learning")
+         "** SOMEDAY find and read %?")))
+
+;;以下设置仅在使用GUI时起效，终端中无效
+(when (display-graphic-p)
+  ;;中文与外文字体设置
+  ;; Setting English Font
+  (set-face-attribute 'default nil :font "Menlo")
+  ;; Chinese Font
+  (dolist (charset '(kana han symbol cjk-misc bopomofo))
+    (set-fontset-font (frame-parameter nil 'font)charset(font-spec :family "PingFang SC" :size 12)))
+  ;;设置启动窗口的大小
+  (setq default-frame-alist
+        '((height . 57) (width . 202))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
  '(column-number-mode t)
  '(current-language-environment "UTF-8")
  '(display-time-mode t)
+ '(fci-rule-color "gray50")
+ '(fci-rule-use-dashes nil)
  '(git-gutter:handled-backends (quote (svn hg git)))
  '(menu-bar-mode nil)
  '(safe-local-variable-values (quote ((lentic-init . lentic-orgel-org-init))))
  '(session-use-package t nil (session))
+ '(standard-indent 2)
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(artbollocks-lexical-illusions-face ((t (:foreground "gray"))))
+ '(artbollocks-passive-voice-face ((t (:foreground "Gray"))))
+ '(bmkp-snippet ((t (:inherit region :foreground "textBackgroundColor"))))
+ '(font-latex-sectioning-0-face ((t (:inherit font-latex-sectioning-1-face :foreground "dark gray" :height 1.1))))
+ '(font-latex-sectioning-1-face ((t (:inherit font-latex-sectioning-2-face :foreground "dark gray" :height 1.1))))
+ '(font-latex-sectioning-2-face ((t (:inherit font-latex-sectioning-3-face :foreground "dark gray" :height 1.1))))
+ '(font-latex-sectioning-3-face ((t (:inherit font-latex-sectioning-4-face :foreground "dark gray" :height 1.1))))
+ '(linum ((t (:inherit (shadow default) :background "#3c3f41" :foreground "#a9b7c6"))))
+ '(org-level-2 ((t (:inherit outline-2 :foreground "#198899"))))
+ '(region ((t (:background "highlightColor" :foreground "#465a61" :inverse-video t :underline nil :slant normal :weight normal))))
  '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold))) t))
 (menu-bar-mode -1)
 ;;; Local Variables:

@@ -1,0 +1,16 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: new function
+# key: newfun
+# binding: direct-keybinding
+# --
+${FunctionName} <- function(${args}) {
+  ## ${A one-sentence description of the function}
+  ##
+  ## Args:
+  ##   ${arg}: ${Description including the data type}
+  ##
+  ## Returns:
+  ##   ${A description of the return value}
+
+  $0
+}

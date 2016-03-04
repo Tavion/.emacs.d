@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: sequence
+# key: seq
+# binding: direct-keybinding
+# --
+seq(${from}, ${to}, ${by})
